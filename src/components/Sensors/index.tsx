@@ -2,6 +2,7 @@ import { Container, Title, Text, Button, TypeSensors } from "./styles";
 import imageTCA from "../../assets/tca.svg";
 import imageAS from "../../assets/as.svg";
 import imageHF from "../../assets/hf.svg";
+import { NavLink } from "react-router-dom";
 
 export function Sensors() {
   return (
@@ -15,7 +16,9 @@ export function Sensors() {
         Plataforma DynaPredict Web para análise, prognóstico e tomada de
         decisão.
       </Text>
-      <Button>VER MAIS</Button>
+      <NavLink to="/data">
+        <Button>VER MAIS</Button>
+      </NavLink>
       <TypeSensors>
         <img src={imageTCA} alt="Imagem Ilustrativa do Sensor TcA+" />
         <img src={imageAS} alt="Imagem Ilustrativa do Sensor AS" />
