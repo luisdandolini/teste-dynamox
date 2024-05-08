@@ -1,8 +1,13 @@
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Container, Title, Input, ContainerForm, Button } from "./styles";
-import { ErrorMessage } from "@hookform/error-message";
 import Alert from "@mui/material/Alert";
 import { useState } from "react";
+import { ErrorText } from "../ErrorText";
+
+export const errorStyle = {
+  color: "#D10202",
+  fontSize: "14px",
+};
 
 type FormData = {
   name: string;
@@ -12,8 +17,8 @@ type FormData = {
 };
 
 export function Footer() {
-  const [formSubmitted, setFormSubmitted] = useState(false);
-  const [showAlert, setShowAlert] = useState(false);
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
+  const [isShowAlert, isSetShowAlert] = useState(false);
   const {
     register,
     handleSubmit,
@@ -22,11 +27,11 @@ export function Footer() {
 
   const onSubmit: SubmitHandler<FormData> = (data) => {
     console.log(data);
-    setFormSubmitted(true);
-    setShowAlert(true);
+    setIsFormSubmitted(true);
+    isSetShowAlert(true);
 
     setTimeout(() => {
-      setShowAlert(false);
+      isSetShowAlert(false);
     }, 3000);
   };
 
@@ -44,15 +49,7 @@ export function Footer() {
             maxLength: 40,
           })}
         ></Input>
-        <ErrorMessage
-          errors={errors}
-          name="name"
-          render={({ message }) => (
-            <span style={{ color: "#D10202", fontSize: "14px" }}>
-              {message}
-            </span>
-          )}
-        />
+        <ErrorText errors={errors} name="name" errorStyle={errorStyle} />
 
         <Input
           placeholder="Em qual empresa você trabalha?"
@@ -61,15 +58,7 @@ export function Footer() {
             maxLength: 40,
           })}
         ></Input>
-        <ErrorMessage
-          errors={errors}
-          name="company"
-          render={({ message }) => (
-            <span style={{ color: "#D10202", fontSize: "14px" }}>
-              {message}
-            </span>
-          )}
-        />
+        <ErrorText errors={errors} name="company" errorStyle={errorStyle} />
 
         <Input
           placeholder="Digite aqui o seu email?"
@@ -82,31 +71,15 @@ export function Footer() {
             maxLength: 40,
           })}
         ></Input>
-        <ErrorMessage
-          errors={errors}
-          name="email"
-          render={({ message }) => (
-            <span style={{ color: "#D10202", fontSize: "14px" }}>
-              {message}
-            </span>
-          )}
-        />
+        <ErrorText errors={errors} name="email" errorStyle={errorStyle} />
 
         <Input
           placeholder="Qual o seu telefone?"
           {...register("phone", { required: "O campo é obrigatório" })}
         ></Input>
-        <ErrorMessage
-          errors={errors}
-          name="phone"
-          render={({ message }) => (
-            <span style={{ color: "#D10202", fontSize: "14px" }}>
-              {message}
-            </span>
-          )}
-        />
+        <ErrorText errors={errors} name="phone" errorStyle={errorStyle} />
 
-        {formSubmitted && showAlert && (
+        {isFormSubmitted && isShowAlert && (
           <Alert severity="success">Dados enviados com sucesso!</Alert>
         )}
 
