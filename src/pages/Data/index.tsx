@@ -1,7 +1,9 @@
+import { Container, Header } from "./styles";
+
 export function Data() {
   return (
-    <div>
-      <h1>Data</h1>
-    </div>
+    <Container>
+      <Header>Análise de Dados</Header>
+    </Container>
   );
 }

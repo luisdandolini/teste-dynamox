@@ -1,6 +1,9 @@
 import styled from "styled-components";
 
 export const Container = styled.footer`
+  background-color: ${({ theme }) => theme.COLORS.BACKGROUND_900};
+  color: ${({ theme }) => theme.COLORS.WHITE};
+
   display: flex;
   flex-direction: column;
   align-items: center;

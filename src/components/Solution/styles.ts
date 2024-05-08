@@ -23,4 +23,6 @@ export const Title = styled.h2`
   font-size: 5rem;
   font-weight: 700;
   margin-bottom: 2rem;
+
+  color: ${({ theme }) => theme.COLORS.WHITE};
 `;
