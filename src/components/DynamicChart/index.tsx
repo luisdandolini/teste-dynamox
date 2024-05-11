@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
-import axios, { AxiosResponse } from "axios";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchData } from "../../store/slice/chartDataSlice";
 import { Container, Content } from "./styles";
-
-interface DataItem {
-  datetime: string;
-  max: number;
-}
+import type { AppDispatch } from "../../store/store";
+import { RootState } from "../../store/store";
 
 interface DynamicChartProps {
   urls: string[];
@@ -17,6 +15,12 @@ interface DynamicChartProps {
   lineColors?: string[];
 }
 
+interface SeriesData {
+  seriesName: string;
+  data: Array<{ x: number; y: number }>;
+  color: string;
+}
+
 const DynamicChart: React.FC<DynamicChartProps> = ({
   urls,
   seriesNames,
@@ -24,38 +28,28 @@ const DynamicChart: React.FC<DynamicChartProps> = ({
   titleAxisX,
   lineColors = [],
 }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { data, loading, error } = useSelector(
+    (state: RootState) => state.chartData
+  );
   const [chartOptions, setChartOptions] = useState<Highcharts.Options>({
     series: [],
   });
 
   useEffect(() => {
-    const fetchData = (
-      url: string,
-      seriesName: string,
-      color: string | undefined
-    ): Promise<Highcharts.SeriesOptionsType> => {
-      return axios
-        .get(url)
-        .then((response: AxiosResponse<{ data: DataItem[] }>) => {
-          const { data } = response.data;
-          const formattedData = data.map((item: DataItem) => ({
-            x: new Date(item.datetime).getTime(),
-            y: item.max,
-          }));
-          return {
-            type: "line",
-            name: seriesName,
-            data: formattedData,
-            color: color,
-          };
-        });
-    };
+    urls.forEach((url, index) => {
+      dispatch(
+        fetchData({
+          url,
+          seriesName: seriesNames[index],
+          color: lineColors[index],
+        })
+      );
+    });
+  }, [dispatch, urls, seriesNames, lineColors]);
 
-    Promise.all(
-      urls.map((url, index) =>
-        fetchData(url, seriesNames[index], lineColors[index])
-      )
-    ).then((responses: Highcharts.SeriesOptionsType[]) => {
+  useEffect(() => {
+    if (!loading && data.length > 0) {
       const options: Highcharts.Options = {
         title: {
           text: title,
@@ -63,15 +57,20 @@ const DynamicChart: React.FC<DynamicChartProps> = ({
         xAxis: {
           type: "datetime",
           title: {
-            text: "Data e Hora",
+            text: titleAxisX,
           },
         },
         yAxis: {
           title: {
-            text: titleAxisX,
+            text: "Data e Hora",
           },
         },
-        series: responses,
+        series: data.map((series: SeriesData) => ({
+          type: "line",
+          name: series.seriesName,
+          data: series.data,
+          color: series.color,
+        })),
         tooltip: {
           dateTimeLabelFormats: {
             day: "%A, %d de %B de %Y",
@@ -84,8 +83,12 @@ const DynamicChart: React.FC<DynamicChartProps> = ({
         },
       };
       setChartOptions(options);
-    });
-  }, [urls, seriesNames, lineColors]);
+    }
+  }, [data, loading]);
+
+  if (error) {
+    return <div>Erro ao carregar os dados: {error}</div>;
+  }
 
   return (
     <Container>
